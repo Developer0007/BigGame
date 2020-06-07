@@ -1,22 +1,26 @@
-var activePlayer,scores,roundscore,playing;
+var activePlayer,scores,roundscore,playing,preDice;
 
 init();
 
 document.querySelector('.btn-roll').addEventListener('click',function(){
     if (playing) {
         var dice = Math.floor(Math.random() * 6) + 1;
+
         var diceDom = document.querySelector('.dice');
-        
         diceDom.style.display = 'block';
         diceDom.src = `dice-${dice}.png` ;
-
-        if (dice !== 1){
+        if(dice === 6 && preDice === dice) {
+            scores[activePlayer] = 0;
+            document.getElementById(`score-${activePlayer}`).textContent = 0;
+            reset();
+        } else if (dice !== 1){
             roundscore += dice;
             document.getElementById(`current-${activePlayer}`).textContent = roundscore;
-        } else {
-            reset();
-        }
-
+            preDice = dice;
+            } else {
+                reset();
+            }
+        
     }
 });
 
@@ -26,9 +30,15 @@ document.querySelector('.btn-hold').addEventListener('click',function () {
             scores[activePlayer] += roundscore;
             //update Ui
             document.getElementById(`score-${activePlayer}`).textContent = scores[activePlayer];
-
+            var scoreLimit = document.querySelector('.final-score').value;
+            var finalScore;
+            if (scoreLimit) {
+                finalScore = scoreLimit;
+            } else {
+                finalScore = 100;
+            }
             //if player wonthe game
-            if (scores[activePlayer] >= 100) {
+            if (scores[activePlayer] >= finalScore) {
                 document.querySelector(`#name-${activePlayer}`).textContent = 'WINNER!';
                 document.querySelector('.dice').style.display = 'none';
                 document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
@@ -61,6 +71,8 @@ function init() {
     roundscore = 0;
     activePlayer = 0;
     playing = true;
+    preDice = 0;
+
 
     document.querySelector('.dice').style.display = 'none';
     document.getElementById('score-0').textContent = 0;
